@@ -11,26 +11,27 @@ class NewRadix:
     def __init__(self, prefix, children, value=None):
         self.prefix = prefix
         self.children = children
-        self.value = value 
-    
-    def child_prefixes(self, prefix):
+        self.value = value
+
+    def child_prefixes(self):
         for child in self.children:
             yield child
-            if child.prefix.startswith(prefix):
-                
-                yield from child.child_prefixes(prefix)
+            yield from child.child_prefixes()
 
-        
-    
     def prefixes(self, prefix):
+        found = None
         for child in self.children:
             if child.prefix == prefix:
                 yield child
             if prefix.startswith(child.prefix):
-                yield from child.child_prefixes(prefix)
-        
+                found = child
+                break
 
-    
+        if found:
+            yield from found.child_prefixes()
+
+
+
     def highest_prefix(self, prefix):
         highest = None
         common = None
@@ -48,7 +49,7 @@ class NewRadix:
                         highest = test
                         common = new_common
         return highest, common
-    
+
     def insert(self, prefix, value=None):
         # find the longest match where we belong
         highest_prefix, common = self.highest_prefix(prefix)
@@ -57,10 +58,8 @@ class NewRadix:
             new_item = NewRadix(prefix, value=value, children=[])
             highest_prefix.children.append(new_item)
         else:
-            
-            
+
+
             new_remainder = NewRadix(prefix, value=value, children=[])
             new_item = NewRadix(prefix[:1], value=None, children=[new_remainder])
             self.children.append(new_item)
-            
-        

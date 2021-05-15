@@ -3,6 +3,7 @@ from radixtree import NewRadix
 root = NewRadix("", children=[NewRadix("h", children=[NewRadix("hello", children=[])])])
 
 root.insert("hellohello", None)
+root.insert("hellohellohello", None)
 
 items = list(root.prefixes("h"))
 for item in items:
