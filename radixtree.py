@@ -19,45 +19,48 @@ class NewRadix:
             yield from child.child_prefixes()
 
     def prefixes(self, prefix):
-        found = None
+
         for child in self.children:
             if child.prefix == prefix:
                 yield child
-            if prefix.startswith(child.prefix):
-                found = child
-                break
-
-        if found:
-            yield from found.child_prefixes()
+                yield from child.child_prefixes()
+            elif child.prefix.startswith(prefix):
+                yield child
+                yield from child.child_prefixes()
+            else:
+                yield from child.prefixes(prefix)
 
 
 
     def highest_prefix(self, prefix):
         highest = None
+        common = None
         for child in self.children:
+
             if prefix.startswith(child.prefix):
+                common = common_substring(prefix, child.prefix)
                 if highest == None:
                     highest = child
 
-                test = child.highest_prefix(prefix)
+                test, challenger_common = child.highest_prefix(prefix)
                 if highest == None:
                     highest = test
+                    common = chalenger_common
                 if test:
                     if len(test.prefix) > len(highest.prefix):
                         highest = test
-        return highest
+                        common = challenger_common
+        return highest, common
 
     def insert(self, prefix, value=None):
         # find the longest match where we belong
-        highest_prefix = self.highest_prefix(prefix)
+        highest_prefix, common = self.highest_prefix(prefix)
         if highest_prefix != None:
             new_item = NewRadix(prefix, value=value, children=[])
             highest_prefix.children.append(new_item)
         else:
-
-
             new_remainder = NewRadix(prefix, value=value, children=[])
-            new_item = NewRadix(prefix[:1], value=None, children=[new_remainder])
-            self.children.append(new_item)
+
+            self.children.append(new_remainder)
 
 
