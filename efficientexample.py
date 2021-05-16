@@ -5,6 +5,8 @@ root.insert("hello", 1)
 root.insert("hellohullaba", 2)
 root.insert("hellohullabasomething", 3)
 root.insert("hellohullabasomesplit", 4)
+root.insert("hellohullabasome", 5)
+
 
 def walk(items, spaces = 0):
     for child in items:
